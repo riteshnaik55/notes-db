@@ -1,5 +1,6 @@
 import axios from "axios";
+const baseURL = import.meta.env.VITE_API_URL || "/api/notes";
 const API = axios.create({
- baseURL: import.meta.env.VITE_API_URL
+  baseURL,
 });
-export default API
+export default API;

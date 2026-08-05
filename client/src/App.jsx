@@ -1,121 +1,98 @@
-import { useEffect, useState } from "react";
-import API from "./api/notesApi";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import Login from './components/Login';
+import NotesApp from './components/NotesApp';
+
+// Configure axios with base URL (uses proxy in development)
+const API_BASE = process.env.NODE_ENV === 'production'
+  ? 'http://localhost:5000'
+  : '';
+
+axios.defaults.withCredentials = true;
+axios.defaults.baseURL = API_BASE;
 
 function App() {
-  const [notes, setNotes] = useState([]);
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [editingId, setEditingId] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [tokenExpiry, setTokenExpiry] = useState(null);
 
+  // Check authentication status on app load
   useEffect(() => {
-    fetchNotes();
+    checkAuthStatus();
+
+    // Set up interval to check auth status every 30 seconds
+    const interval = setInterval(checkAuthStatus, 30000);
+
+    return () => clearInterval(interval);
   }, []);
 
-  const fetchNotes = async () => {
-    const res = await API.get("/");
-    setNotes(res.data);
+  const checkAuthStatus = async () => {
+    try {
+      const response = await axios.get('/api/verify');
+      if (response.data.authenticated) {
+        setIsAuthenticated(true);
+        setTokenExpiry(response.data.expiresAt);
+      } else {
+        setIsAuthenticated(false);
+        setTokenExpiry(null);
+      }
+    } catch (error) {
+      setIsAuthenticated(false);
+      setTokenExpiry(null);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const createNote = async () => {
-    if (!title || !content) return;
-
-    await API.post("/", {
-      title,
-      content,
-    });
-
-    setTitle("");
-    setContent("");
-    fetchNotes();
+  const handleLogout = async () => {
+    try {
+      await axios.post('/api/logout');
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      setIsAuthenticated(false);
+      setTokenExpiry(null);
+    }
   };
 
-  const startEdit = (note) => {
-    setEditingId(note._id);
-    setTitle(note.title);
-    setContent(note.content);
-  };
-
-  const updateNote = async () => {
-    if (!editingId) return;
-
-    await API.put(`/${editingId}`, {
-      title,
-      content,
-    });
-
-    setEditingId(null);
-    setTitle("");
-    setContent("");
-    fetchNotes();
-  };
-
-  const deleteNote = async (id) => {
-    await API.delete(`/${id}`);
-    fetchNotes();
-  };
-
-  const cancelEdit = () => {
-    setEditingId(null);
-    setTitle("");
-    setContent("");
-  };
+  if (isLoading) {
+    return (
+      <div style={styles.loadingContainer}>
+        <div style={styles.spinner}></div>
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   return (
-    <div style={{ maxWidth: 600, margin: "40px auto", fontFamily: "sans-serif" }}>
-      <h1>Notes</h1>
-
-      <div style={{ marginBottom: 20 }}>
-        <input
-          type="text"
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          style={{ display: "block", width: "100%", marginBottom: 8, padding: 8 }}
-        />
-        <textarea
-          placeholder="Content"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          style={{ display: "block", width: "100%", marginBottom: 8, padding: 8 }}
-        />
-
-        {editingId ? (
-          <>
-            <button onClick={updateNote}>Update Note</button>
-            <button onClick={cancelEdit} style={{ marginLeft: 8 }}>
-              Cancel
-            </button>
-          </>
-        ) : (
-          <button onClick={createNote}>Add Note</button>
-        )}
-      </div>
-
-      <ul style={{ listStyle: "none", padding: 0 }}>
-        {notes.map((note) => (
-          <li
-            key={note._id}
-            style={{
-              border: "1px solid #ddd",
-              borderRadius: 6,
-              padding: 12,
-              marginBottom: 10,
-            }}
-          >
-            <h3 style={{ margin: "0 0 6px" }}>{note.title}</h3>
-            <p style={{ margin: "0 0 10px" }}>{note.content}</p>
-            <button onClick={() => startEdit(note)}>Edit</button>
-            <button
-              onClick={() => deleteNote(note._id)}
-              style={{ marginLeft: 8 }}
-            >
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
+    <div className="App">
+      {!isAuthenticated ? (
+        <Login onLoginSuccess={() => setIsAuthenticated(true)} />
+      ) : (
+        <NotesApp onLogout={handleLogout} tokenExpiry={tokenExpiry} />
+      )}
     </div>
   );
 }
+
+const styles = {
+  loadingContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100vh',
+    backgroundColor: '#f5f5f5'
+  },
+  spinner: {
+    border: '4px solid #f3f3f3',
+    borderTop: '4px solid #3498db',
+    borderRadius: '50%',
+    width: '40px',
+    height: '40px',
+    animation: 'spin 1s linear infinite',
+    marginBottom: '20px'
+  }
+};
 
 export default App;
