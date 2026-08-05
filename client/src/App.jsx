@@ -4,9 +4,7 @@ import Login from './components/Login';
 import NotesApp from './components/NotesApp';
 
 // Configure axios with base URL (uses proxy in development)
-const API_BASE = process.env.NODE_ENV === 'production'
-  ? 'http://localhost:5000'
-  : '';
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
 
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = API_BASE;
