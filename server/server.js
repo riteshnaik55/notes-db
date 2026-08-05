@@ -10,6 +10,25 @@ const jwt = require('jsonwebtoken');
 const notesRoutes = require("./routes/notes");
 
 const app = express();
+const isProduction = process.env.NODE_ENV === 'production';
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://ritesh-notes.vercel.app",
+];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
 
 // Security middleware
 app.use(helmet({
@@ -24,18 +43,8 @@ app.use(helmet({
 }));
 
 // CORS configuration
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:3000",
-      "https://ritesh-notes.vercel.app",
-    ],
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-  })
-);
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 app.use(cookieParser());
 app.use(express.json());
@@ -83,8 +92,8 @@ app.post('/api/login', authLimiter, async (req, res) => {
     // Set HTTP-only cookie
     res.cookie('authToken', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
       maxAge: 5 * 60 * 1000, // 5 minutes
       path: '/'
     });
@@ -105,8 +114,8 @@ app.post('/api/login', authLimiter, async (req, res) => {
 app.post('/api/logout', (req, res) => {
   res.clearCookie('authToken', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
     path: '/'
   });
   res.json({ success: true, message: 'Logged out successfully' });

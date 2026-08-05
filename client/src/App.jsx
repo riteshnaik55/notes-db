@@ -3,7 +3,8 @@ import axios from 'axios';
 import Login from './components/Login';
 import NotesApp from './components/NotesApp';
 
-// Configure axios with base URL (uses proxy in development)
+// Configure axios with base URL to the API server.
+// In production, VITE_API_URL should point to the backend origin, e.g. https://notes-db-server-....vercel.app
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 axios.defaults.withCredentials = true;
