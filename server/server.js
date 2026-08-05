@@ -29,7 +29,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "http://localhost:3000",
-      "ritesh-notes.vercel.app",
+      "https://ritesh-notes.vercel.app",
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
