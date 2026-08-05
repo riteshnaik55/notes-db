@@ -136,7 +136,23 @@ app.get('/api/verify', (req, res) => {
   }
 });
 
-app.use("/api/notes", notesRoutes);
+// Auth middleware for protected routes
+const authenticateToken = (req, res, next) => {
+  const token = req.cookies.authToken || req.headers.authorization?.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ error: 'Authentication required' });
+  }
+
+  try {
+    jwt.verify(token, process.env.JWT_SECRET);
+    next();
+  } catch (error) {
+    return res.status(401).json({ error: 'Invalid or expired token' });
+  }
+};
+
+app.use("/api/notes", authenticateToken, notesRoutes);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', environment: process.env.NODE_ENV || 'development' });
