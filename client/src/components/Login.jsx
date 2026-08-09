@@ -26,7 +26,7 @@ function Login({ onLoginSuccess }) {
 
   return (
     <div className="login-container h-screen flex flex-col place-content-center align-center text-center gap-5">
-        <h1>Secure Notes</h1>
+        <h1>Notes</h1>
 
         <form onSubmit={handleSubmit}>
           <div className="input-container border-1 bg-gray-500 rounded-md p-2 w-sm mx-auto">
@@ -37,6 +37,7 @@ function Login({ onLoginSuccess }) {
               placeholder="Enter password"
               disabled={isLoading}
               autoFocus
+              autocomplete="current-password"
               className="bg-transparent border-none outline-none text-white w-full"
             />
           </div>

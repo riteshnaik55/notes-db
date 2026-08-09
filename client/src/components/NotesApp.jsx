@@ -111,18 +111,19 @@ function NotesApp({ onLogout }) {
       </ul>
 
       <div className="lg:w-2/5 md:w-2/5 w-full">
-        <div className="flex flex-col gap-2 border border-gray-400 rounded-md p-3">
+        <div className="flex flex-col gap-2 rounded-md p-10 bg-stone-900">
         <input
           type="text"
           placeholder="Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className=""
+          className="border border-gray-300 rounded-md p-2 mb-2"
         />
         <textarea
           placeholder="Content"
           value={content}
           onChange={(e) => setContent(e.target.value)}
+          className="border border-gray-300 rounded-md p-2"
         />
 
         {editingId ? (
