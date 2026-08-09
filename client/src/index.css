@@ -7,6 +7,10 @@
     font-family: "Space Grotesk";
     src: url("./assets/fonts/spacegrotesk-regular.ttf") format("truetype");
 }
+/* #6761f5 */
+/* #f56182 */
+/* #30d8f8 */
+/* #ffb43f */
 :root {
   --text: #6b6375;
   --text-h: #08060d;
