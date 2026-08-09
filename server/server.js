@@ -7,6 +7,8 @@ const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const path = require('path');
+const fs = require('fs');
 const notesRoutes = require("./routes/notes");
 
 const app = express();
@@ -157,6 +159,15 @@ app.use("/api/notes", authenticateToken, notesRoutes);
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', environment: process.env.NODE_ENV || 'development' });
 });
+
+const clientDistPath = path.join(__dirname, '..', 'client', 'dist');
+if (fs.existsSync(clientDistPath)) {
+  app.use(express.static(clientDistPath));
+
+  app.get(/^(?!\/api\/).*/, (req, res) => {
+    res.sendFile(path.join(clientDistPath, 'index.html'));
+  });
+}
 
 const PORT = process.env.PORT || 5000;
 if (require.main === module) {
