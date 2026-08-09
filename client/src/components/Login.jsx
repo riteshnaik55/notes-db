@@ -50,7 +50,7 @@ function Login({ onLoginSuccess }) {
             disabled={isLoading}
             className="mt-5 bg-blue-800 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
           >
-            {isLoading ? 'Verifying...' : 'Unlock Notes'}
+            {isLoading ? 'Verifying...' : 'Unlock'}
           </button>
         </form>
     </div>

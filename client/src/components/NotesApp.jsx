@@ -68,18 +68,20 @@ function NotesApp({ onLogout }) {
   };
 
   return (
-    <div className="flex flex-wrap gap-x-2 gap-y-5 place-content-between">
+    <div className="flex flex-wrap gap-x-2 gap-y-5 justify-center md:justify-between px-5">
       <div className="w-full flex items-center justify-between px-2">
         <h1 className="flex-1 text-center">Notes</h1>
         <button
           onClick={onLogout}
-          className="cursor-pointer rounded-md border border-gray-300 px-3 py-1 text-sm hover:bg-gray-100 hover:text-gray-800"
+          className="cursor-pointer rounded-md px-3 py-1 text-sm hover:bg-gray-100 hover:text-gray-800"
         >
-          Logout
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+          </svg>
         </button>
       </div>
 
-      <ul className="w-2/5">
+      <ul className="lg:w-2/5 md:w-2/5 w-full">
         {notes.map((note) => (
           <li
             key={note._id}
@@ -108,7 +110,7 @@ function NotesApp({ onLogout }) {
         ))}
       </ul>
 
-      <div className="w-2/5">
+      <div className="lg:w-2/5 md:w-2/5 w-full">
         <div className="flex flex-col gap-2 border border-gray-400 rounded-md p-3">
         <input
           type="text"
