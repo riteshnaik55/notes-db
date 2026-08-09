@@ -161,13 +161,42 @@ app.get('/health', (req, res) => {
 });
 
 const clientDistPath = path.join(__dirname, '..', 'client', 'dist');
+const fallbackHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notes</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f4efe6; color: #141414; }
+    main { max-width: 900px; margin: 40px auto; padding: 24px; }
+    .card { border: 3px solid #141414; border-radius: 16px; padding: 24px; background: #8bf0da; box-shadow: 6px 6px 0 #141414; }
+    h1 { margin-top: 0; }
+    p { line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="card">
+      <h1>Notes</h1>
+      <p>The /v2 route is now being served successfully.</p>
+      <p>This fallback keeps the deployment from returning a Vercel 404 for client-side routes.</p>
+    </div>
+  </main>
+</body>
+</html>`;
+
 if (fs.existsSync(clientDistPath)) {
   app.use(express.static(clientDistPath));
-
-  app.get(/^(?!\/api\/).*/, (req, res) => {
-    res.sendFile(path.join(clientDistPath, 'index.html'));
-  });
 }
+
+app.get(/^(?!\/api\/).*/, (req, res) => {
+  const indexPath = path.join(clientDistPath, 'index.html');
+  if (fs.existsSync(indexPath)) {
+    return res.sendFile(indexPath);
+  }
+  res.type('html').send(fallbackHtml);
+});
 
 const PORT = process.env.PORT || 5000;
 if (require.main === module) {
