@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import API from "../api/notesApi";
 import axios from 'axios';
 
-function NotesApp() {
+function NotesApp({ onLogout }) {
   const [notes, setNotes] = useState([]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -69,7 +69,15 @@ function NotesApp() {
 
   return (
     <div className="flex flex-wrap gap-x-2 gap-y-5 place-content-between">
-      <h1 className="w-full text-center">Notes</h1>
+      <div className="w-full flex items-center justify-between px-2">
+        <h1 className="flex-1 text-center">Notes</h1>
+        <button
+          onClick={onLogout}
+          className="cursor-pointer rounded-md border border-gray-300 px-3 py-1 text-sm hover:bg-gray-100 hover:text-gray-800"
+        >
+          Logout
+        </button>
+      </div>
 
       <ul className="w-2/5">
         {notes.map((note) => (
