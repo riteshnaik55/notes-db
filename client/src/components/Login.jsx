@@ -25,8 +25,8 @@ function Login({ onLoginSuccess }) {
   };
 
   return (
-    <div className="login-container h-screen flex flex-col place-content-center align-center text-center gap-5">
-        <h1>Notes</h1>
+    <div className="login-container h-screen flex flex-col place-content-center align-center text-center gap-10 bg-gray-950">
+        <h1 className="text-5xl text-slate-50">Notes</h1>
 
         <form onSubmit={handleSubmit}>
           <div className="input-container border-1 bg-gray-500 rounded-md p-2 w-sm mx-auto">
@@ -38,18 +38,18 @@ function Login({ onLoginSuccess }) {
               disabled={isLoading}
               autoFocus
               autocomplete="current-password"
-              className="bg-transparent border-none outline-none text-white w-full"
+              className="bg-transparent border-none outline-none text-white w-full text-xl"
             />
           </div>
 
           {error && (
-            <div className="text-sm text-red-400">{error}</div>
+            <div className="text-md text-red-400">{error}</div>
           )}
 
           <button
             type="submit"
             disabled={isLoading}
-            className="mt-5 bg-blue-800 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
+            className="text-xl mt-5 bg-blue-800 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
           >
             {isLoading ? 'Verifying...' : 'Unlock'}
           </button>

@@ -7,11 +7,7 @@
     font-family: "Space Grotesk";
     src: url("./assets/fonts/spacegrotesk-regular.ttf") format("truetype");
 }
-/* #6761f5 */
-/* #f56182 */
-/* #30d8f8 */
-/* #ffb43f */
-:root {
+/* :root {
   --text: #6b6375;
   --text-h: #08060d;
   --bg: #fff;
@@ -106,4 +102,318 @@ p {
 }
 .v2-shell h1, .v2-shell h2{
     color: var(--text-h);
+} */
+
+:root {
+  --ink: #141414;
+  --paper: #f4efe6;
+
+  --yellow: #ffd02f;
+  --mint: #8bf0da;
+  --pink: #ff8fe0;
+  --sky: #7cc6ff;
+  --coral: #ff7a59;
+  --red: #FF6B6B;
+  --blue: #00BBF9;
+
+  --shadow: 6px 6px 0 var(--ink);
+
+  --heading: "Space Grotesk", sans-serif;
+  --body: "League-Spartan", sans-serif;
+  
+  --one: #6761f5;
+  --two: #f56182;
+  --three: #30d8f8;
+  --four: #ffb43f;
+}
+body {
+  margin: 0;
+  color: var(--ink);
+}
+h1, h2 {
+  font-family: var(--heading);
+}
+.login-container form{
+  font-family: var(--body);
+}
+.v2-shell {
+  font-family: var(--heading);
+  color: var(--ink);
+  background: var(--paper);
+  background-image: radial-gradient(rgba(20, 20, 20, 0.13) 1.4px, transparent 1.4px);
+  background-size: 26px 26px;
+  min-height: 100vh;
+  padding: 44px clamp(20px, 6vw, 84px) 80px;
+}
+.v2-shell ::placeholder {
+  color: rgba(20, 20, 20, 0.4);
+  font-weight: 500;
+}
+.v2-shell header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto 34px;
+}
+.v2-shell h1 {
+  font-family: var(--body);
+  font-size: clamp(2.6rem, 5vw, 4rem);
+  letter-spacing: -1px;
+  position: relative;
+  z-index: 0;
+}
+.v2-shell h1 .swipe {
+  position: absolute;
+  left: -10px;
+  right: -14px;
+  top: 52%;
+  height: 46%;
+  background: var(--yellow);
+  z-index: -1;
+  transform: rotate(-1.6deg);
+}
+.lock-btn {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  box-shadow: 4px 4px 0 var(--ink);
+  transition: 0.12s;
+}
+.lock-btn:hover {
+  background: var(--yellow);
+}
+.lock-btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+.search {
+  max-width: 760px;
+  margin: 0 auto 54px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #fff;
+  border: 3px solid var(--ink);
+  border-radius: 16px;
+  padding: 15px 20px;
+  box-shadow: var(--shadow);
+  transition: 0.15s;
+}
+.search:focus-within {
+  transform: translate(-2px, -2px);
+  box-shadow: 8px 8px 0 var(--ink);
+}
+.search input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font: inherit;
+  font-size: 1.05rem;
+  font-weight: 500;
+  background: transparent;
+}
+.search kbd {
+  font-weight: 700;
+  font-size: 0.85rem;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-bottom-width: 4px;
+  border-radius: 8px;
+  padding: 3px 9px;
+}
+.v2-shell main {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 48px;
+  align-items: start;
+}
+.col-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 26px;
+}
+.col-head h3,
+.composer h3 {
+  font-family: var(--body);
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.badge {
+  background: var(--pink);
+  border: 2.5px solid var(--ink);
+  border-radius: 999px;
+  padding: 3px 13px;
+  font-weight: 700;
+  box-shadow: 3px 3px 0 var(--ink);
+  transform: rotate(2deg);
+}
+.notes {
+  display: grid;
+  gap: 30px;
+}
+.note {
+  position: relative;
+  border: 3px solid var(--ink);
+  border-radius: 16px;
+  padding: 24px 26px;
+  box-shadow: var(--shadow);
+  transform: rotate(var(--rot, 0deg));
+  transition: 0.15s;
+}
+.note::before {
+  content: "";
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-2deg);
+  width: 98px;
+  height: 27px;
+  background: rgba(255, 255, 255, 0.65);
+  border: 2px solid rgba(20, 20, 20, 0.15);
+}
+.note:nth-child(3n + 1) {
+  background: var(--mint);
+}
+.note:nth-child(3n + 2) {
+  background: var(--yellow);
+}
+.note:nth-child(3n + 3) {
+  background: var(--pink);
+}
+.note:nth-child(3n + 4)  {
+  background: var(--sky);
+}
+.note-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+.note h2 {
+  font-family: var(--body);
+  font-size: 1.35rem;
+}
+.note p {
+  margin-top: 10px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.actions {
+  display: flex;
+  gap: 9px;
+}
+.actions button {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  border: 2.5px solid var(--ink);
+  border-radius: 10px;
+  box-shadow: 3px 3px 0 var(--ink);
+  transition: 0.12s;
+}
+.actions button:hover {
+  background: var(--ink);
+  color: #fff;
+}
+.actions button:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0 var(--ink);
+}
+.composer {
+  position: sticky;
+  top: 32px;
+  background: #fff;
+  border: 3px solid var(--ink);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 10px 10px 0 var(--ink);
+}
+.composer h3 {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.composer h3 .dot {
+  width: 14px;
+  height: 14px;
+  background: var(--coral);
+  border: 2.5px solid var(--ink);
+  border-radius: 50%;
+}
+.composer input,
+.composer textarea {
+  width: 100%;
+  font: inherit;
+  font-weight: 500;
+  background: var(--paper);
+  border: 2.5px solid var(--ink);
+  border-radius: 12px;
+  padding: 13px 15px;
+  outline: none;
+  transition: 0.12s;
+}
+.composer textarea {
+  min-height: 130px;
+  resize: vertical;
+  margin-top: 16px;
+}
+.composer input:focus, .composer textarea:focus {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 var(--ink);
+  background: #fff;
+}
+.btn {
+  margin-top: 22px;
+  width: 100%;
+  padding: 15px;
+  font-family: var(--body);
+  font-size: 1.05rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 3px solid var(--ink);
+  border-radius: 14px;
+  transition: 0.12s;
+}
+.add-btn {
+  background: var(--ink);
+  color: var(--yellow);
+}
+.update-btn{
+  background: var(--blue);
+}
+.cancel-btn{
+  background: var(--red);
+}
+.btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--yellow);
+}
+.btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: 2px 2px 0 var(--yellow);
+}
+@media (max-width: 940px) {
+  .v2-shell main {
+      grid-template-columns: 1fr;
+  }
+  .composer {
+      position: static;
+  }
 }
