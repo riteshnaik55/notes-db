@@ -293,6 +293,7 @@ h1, h2 {
   border: 3px solid var(--ink);
   border-radius: 14px;
   transition: 0.12s;
+  cursor:pointer;
 }
 .add-btn {
   background: var(--ink);

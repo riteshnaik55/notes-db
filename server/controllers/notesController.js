@@ -2,13 +2,30 @@ const crypto = require("crypto");
 const Note = require("../models/Note");
 
 const ENCRYPTION_PREFIX = "enc:v1:";
-const ENCRYPTION_KEY = process.env.NOTES_ENCRYPTION_KEY || process.env.JWT_SECRET || "local-dev-notes-key";
+const LEGACY_KEYS = ["local-dev-notes-key", "notes-local-dev-key", "notes-app-secret", "my_safe_encryption_key_for_database"];
 
-const getEncryptionKey = () => crypto.createHash("sha256").update(String(ENCRYPTION_KEY)).digest();
+const getEncryptionKeys = () => {
+  const configuredKeys = (process.env.NOTES_ENCRYPTION_KEYS || "")
+    .split(",")
+    .map((key) => key.trim())
+    .filter(Boolean);
+
+  const keys = [
+    ...configuredKeys,
+    process.env.NOTES_ENCRYPTION_KEY,
+    process.env.JWT_SECRET,
+    ...LEGACY_KEYS,
+  ].filter((key) => typeof key === "string" && key.trim().length > 0);
+
+  return [...new Set(keys.map((key) => String(key).trim()))];
+};
+
+const getEncryptionKey = (key) => crypto.createHash("sha256").update(String(key)).digest();
 
 const encryptText = (text) => {
+  const primaryKey = getEncryptionKeys()[0] || "local-dev-notes-key";
   const iv = crypto.randomBytes(12);
-  const cipher = crypto.createCipheriv("aes-256-gcm", getEncryptionKey(), iv);
+  const cipher = crypto.createCipheriv("aes-256-gcm", getEncryptionKey(primaryKey), iv);
   const encrypted = Buffer.concat([cipher.update(String(text), "utf8"), cipher.final()]);
   const tag = cipher.getAuthTag();
 
@@ -19,23 +36,28 @@ const decryptText = (value) => {
   if (typeof value !== "string") return value;
   if (!value.startsWith(ENCRYPTION_PREFIX)) return value;
 
-  try {
-    const payload = value.slice(ENCRYPTION_PREFIX.length);
-    const [ivBase64, tagBase64, encryptedBase64] = payload.split(":");
-    if (!ivBase64 || !tagBase64 || !encryptedBase64) return value;
+  const payload = value.slice(ENCRYPTION_PREFIX.length);
+  const [ivBase64, tagBase64, encryptedBase64] = payload.split(":");
+  if (!ivBase64 || !tagBase64 || !encryptedBase64) return value;
 
-    const iv = Buffer.from(ivBase64, "base64");
-    const tag = Buffer.from(tagBase64, "base64");
-    const encrypted = Buffer.from(encryptedBase64, "base64");
-    const decipher = crypto.createDecipheriv("aes-256-gcm", getEncryptionKey(), iv);
-    decipher.setAuthTag(tag);
+  const iv = Buffer.from(ivBase64, "base64");
+  const tag = Buffer.from(tagBase64, "base64");
+  const encrypted = Buffer.from(encryptedBase64, "base64");
 
-    const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]);
-    return decrypted.toString("utf8");
-  } catch (err) {
-    console.error("Failed to decrypt note field:", err.message);
-    return value;
+  for (const key of getEncryptionKeys()) {
+    try {
+      const decipher = crypto.createDecipheriv("aes-256-gcm", getEncryptionKey(key), iv);
+      decipher.setAuthTag(tag);
+
+      const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]);
+      return decrypted.toString("utf8");
+    } catch (err) {
+      // Try the next configured key if this one does not match the original encryption key.
+    }
   }
+
+  console.error("Failed to decrypt note field: no matching decryption key found.");
+  return value;
 };
 
 const toSafeNoteResponse = (note) => {
@@ -101,3 +123,6 @@ exports.deleteNote = async (req, res) => {
     res.status(500).json(err);
   }
 };
+
+exports.encryptText = encryptText;
+exports.decryptText = decryptText;
