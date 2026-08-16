@@ -1,7 +1,18 @@
 const crypto = require("crypto");
+const mongoose = require("mongoose");
 const Note = require("../models/Note");
 
 const ENCRYPTION_PREFIX = "enc:v1:";
+
+const ensureDatabaseReady = (res) => {
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({
+      error: "Database unavailable. Check MONGO_URI in the production environment.",
+    });
+  }
+
+  return null;
+};
 const LEGACY_KEYS = ["local-dev-notes-key", "notes-local-dev-key", "notes-app-secret", "my_safe_encryption_key_for_database"];
 
 const getEncryptionKeys = () => {
@@ -72,6 +83,9 @@ const toSafeNoteResponse = (note) => {
 
 exports.getNotes = async (req, res) => {
   try {
+    const databaseError = ensureDatabaseReady(res);
+    if (databaseError) return databaseError;
+
     const notes = await Note.find();
     res.json(notes.map(toSafeNoteResponse));
   } catch (err) {
@@ -81,6 +95,9 @@ exports.getNotes = async (req, res) => {
 
 exports.createNote = async (req, res) => {
   try {
+    const databaseError = ensureDatabaseReady(res);
+    if (databaseError) return databaseError;
+
     const noteData = {
       ...req.body,
       title: encryptText(req.body.title),
@@ -96,6 +113,9 @@ exports.createNote = async (req, res) => {
 
 exports.updateNote = async (req, res) => {
   try {
+    const databaseError = ensureDatabaseReady(res);
+    if (databaseError) return databaseError;
+
     const updateData = {};
 
     if (req.body.title !== undefined) {
@@ -115,6 +135,9 @@ exports.updateNote = async (req, res) => {
 
 exports.deleteNote = async (req, res) => {
   try {
+    const databaseError = ensureDatabaseReady(res);
+    if (databaseError) return databaseError;
+
     await Note.findByIdAndDelete(req.params.id);
     res.json({
       message: "Deleted",

@@ -9,19 +9,15 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const path = require('path');
 const fs = require('fs');
+const { isOriginAllowed } = require('./config/cors');
 const notesRoutes = require("./routes/notes");
 
 const app = express();
 const isProduction = process.env.NODE_ENV === 'production';
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:3000",
-  "https://ritesh-notes.vercel.app",
-];
 
 const corsOptions = {
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (isOriginAllowed(origin)) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
@@ -46,6 +42,13 @@ app.use(helmet({
 
 // CORS configuration
 app.use(cors(corsOptions));
+
+app.use((err, req, res, next) => {
+  if (err && err.message === 'Not allowed by CORS') {
+    return res.status(403).json({ error: 'Origin not allowed' });
+  }
+  next(err);
+});
 
 app.use(cookieParser());
 app.use(express.json());
