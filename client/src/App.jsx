@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import Login from './components/Login';
 import NotesApp from './components/NotesApp';
@@ -12,43 +12,7 @@ axios.defaults.baseURL = API_BASE;
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [tokenExpiry, setTokenExpiry] = useState(null);
-  const [currentPath, setCurrentPath] = useState(window.location.pathname);
-
-  // Check authentication status on app load
-  useEffect(() => {
-    const handlePathChange = () => setCurrentPath(window.location.pathname);
-
-    checkAuthStatus();
-
-    // Set up interval to check auth status every 30 seconds
-    const interval = setInterval(checkAuthStatus, 30000);
-    window.addEventListener('popstate', handlePathChange);
-
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener('popstate', handlePathChange);
-    };
-  }, []);
-
-  const checkAuthStatus = async () => {
-    try {
-      const response = await axios.get('/api/verify');
-      if (response.data.authenticated) {
-        setIsAuthenticated(true);
-        setTokenExpiry(response.data.expiresAt);
-      } else {
-        setIsAuthenticated(false);
-        setTokenExpiry(null);
-      }
-    } catch (error) {
-      setIsAuthenticated(false);
-      setTokenExpiry(null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleLogout = async () => {
     try {
@@ -60,14 +24,6 @@ function App() {
       setTokenExpiry(null);
     }
   };
-
-  if (isLoading) {
-    return (
-      <div>
-        <p>Loading...</p>
-      </div>
-    );
-  }
 
   return (
     <div className="App">
